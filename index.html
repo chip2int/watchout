@@ -4,26 +4,44 @@
     <link rel="stylesheet" type="text/css" href="stylesheet.css" />
   </head>
   <body>
+    <span>
+      <h1 class="score">Score: 0</h1>
+    </span>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script>
     var svg = d3.select("body").append("svg");
     var width = window.innerWidth;
     var height = window.innerHeight;
     var posArr = [];
+    var score = 0;
 
+    setInterval(function(){score++}, 150);
+    var checkIntersect= function(Where) {
+      var enemyCX = 0;
+      var enemyCY = 0;
+      //console.log("From", Where);
+      enemies.each( function(d, i) {
+        enemyCX = Math.floor(d3.select(this).attr("cx"));
+        enemyCY = Math.floor(d3.select(this).attr("cy"));
+        if (intersect(player.attr("cx"), 
+                      player.attr("cy"), 
+                      enemyCX, enemyCY)) {
+          console.log("Hit!");
+          score = 0;
 
+        }
+      });
+    };
     var dragmove = function(d){
       d3.select(this)
-      //.attr("cx", d.x = d3.event.dx)
-      //.attr("cy", d.y = d3.event.dy);
-      //.attr("cx", this.cx+=d3.event.dx)
-      //.attr("cy", this.cy+=d3.event.dy);
-      console.log("dx->>", d3.event.dx);
-      console.log("x-->", d3.event.x);
+      .attr("cx", d3.event.sourceEvent.x)
+      .attr("cy", d3.event.sourceEvent.y);
+      checkIntersect("Player");
     };
 
-    var drag = d3.behavior.drag().origin(Object).on("drag", dragmove);
-    
+    var drag = d3.behavior.drag()
+        .origin(Object).on("drag", dragmove);
+
     for (var i = 0; i < 31; i++) {
       posArr[i] = [Math.random() * width, Math.random() * height];
     }
@@ -45,15 +63,33 @@
     var enemies = svg.selectAll(".enemies");
     var player = svg.select(".player");
 
-    var move = function() {enemies.transition().duration(1000)
-      .attr
-      ("cx", function(x) {return (Math.random() * width)})
-      .attr("cy", function(y) {return (Math.random() * height)})
-      .each("end", move)
+    var intersect = function(pCX, pCY, eCX, eCY) {
+      return ((Math.abs(pCX - eCX) <= 12)
+         && (Math.abs(pCY - eCY) <= 12))?true:false
+    };
+
+    var tweenFn = function(d, i, a) {
+      // checkIntersect();
+      return d3.interpolate(a, Math.random() * window.width);
+    };
+
+    var move = function() {enemies.transition()
+      .duration(5000)
+      //.attr("cx", function(x) {return (Math.random() * width)})
+      // .attr("cy", function(y) {return (Math.random() * height)})
+      .attrTween("cx", tweenFn)
+      .attrTween("cy", tweenFn)
+      .each("end", move);
+      //checkIntersect();
     };
     move();
+    setInterval(function(){ checkIntersect("Enemy");}, 5);
+    setInterval(function(){ d3.select("body").select(".score").text("Score: "+score);});
+  
+  // console.log(enemies.attr("cx"));
 
 
     </script>
   </body>
+
 </html>

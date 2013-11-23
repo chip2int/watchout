@@ -9,3 +9,7 @@ circle {
 .player {
   fill: red;
 }
+
+div {
+  height: 50px
+}
