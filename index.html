@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+  </head>
+  <body>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script>
+    var svg = d3.select("body").append("svg");
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    var posArr = [];
+
+
+    var dragmove = function(d){
+      d3.select(this)
+      //.attr("cx", d.x = d3.event.dx)
+      //.attr("cy", d.y = d3.event.dy);
+      //.attr("cx", this.cx+=d3.event.dx)
+      //.attr("cy", this.cy+=d3.event.dy);
+      console.log("dx->>", d3.event.dx);
+      console.log("x-->", d3.event.x);
+    };
+
+    var drag = d3.behavior.drag().origin(Object).on("drag", dragmove);
+    
+    for (var i = 0; i < 31; i++) {
+      posArr[i] = [Math.random() * width, Math.random() * height];
+    }
+    svg.selectAll("circle").data(posArr)
+      .enter().append("circle")
+      .attr("class", "enemies")
+      .attr("cx", function (d) { return d[0];})
+      .attr("cy", function (d) { return d[1];})
+      .attr("r", 12);
+
+    svg.append("circle")
+      .attr("class", "player")
+      .attr("cx", width/2 )
+      .attr("cy", height/2)
+      .attr("r", 12)
+      .call(drag);
+
+
+    var enemies = svg.selectAll(".enemies");
+    var player = svg.select(".player");
+
+    var move = function() {enemies.transition().duration(1000)
+      .attr
+      ("cx", function(x) {return (Math.random() * width)})
+      .attr("cy", function(y) {return (Math.random() * height)})
+      .each("end", move)
+    };
+    move();
+
+
+    </script>
+  </body>
+</html>

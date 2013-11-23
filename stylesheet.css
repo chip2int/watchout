@@ -1,0 +1,11 @@
+circle {
+  fill: red
+}
+
+.enemies {
+  fill: black;
+}
+
+.player {
+  fill: red;
+}
