@@ -4,6 +4,7 @@
     <link rel="stylesheet" type="text/css" href="stylesheet.css" />
   </head>
   <body>
+   
     <span>
       <h1 class="score">Score: 0</h1>
     </span>
@@ -21,8 +22,8 @@
       var enemyCY = 0;
       //console.log("From", Where);
       enemies.each( function(d, i) {
-        enemyCX = Math.floor(d3.select(this).attr("cx"));
-        enemyCY = Math.floor(d3.select(this).attr("cy"));
+        enemyCX = Math.floor(d3.select(this).attr("x"));
+        enemyCY = Math.floor(d3.select(this).attr("y"));
         if (intersect(player.attr("cx"), 
                       player.attr("cy"), 
                       enemyCX, enemyCY)) {
@@ -45,12 +46,24 @@
     for (var i = 0; i < 31; i++) {
       posArr[i] = [Math.random() * width, Math.random() * height];
     }
-    svg.selectAll("circle").data(posArr)
-      .enter().append("circle")
+
+
+    svg.selectAll("image").data(posArr)
+      .enter().append("image")
       .attr("class", "enemies")
-      .attr("cx", function (d) { return d[0];})
-      .attr("cy", function (d) { return d[1];})
-      .attr("r", 12);
+      .attr("x", function(d) {return d[0];})
+      .attr("y", function(d) {return d[1];})
+      .attr("width", 30)
+      .attr("height", 30)
+      .attr("xlink:href", "shuriken.jpeg")
+
+
+    // svg.selectAll("circle").data(posArr)
+    //   .enter().append("circle")
+    //   .attr("class", "enemies")
+    //   .attr("cx", function (d) { return d[0];})
+    //   .attr("cy", function (d) { return d[1];})
+    //   .attr("r", 12)
 
     svg.append("circle")
       .attr("class", "player")
@@ -63,25 +76,32 @@
     var enemies = svg.selectAll(".enemies");
     var player = svg.select(".player");
 
-    var intersect = function(pCX, pCY, eCX, eCY) {
-      return ((Math.abs(pCX - eCX) <= 12)
-         && (Math.abs(pCY - eCY) <= 12))?true:false
-    };
+    // var intersect = function(pCX, pCY, eCX, eCY) {
+    //   return ((Math.abs(pCX - eCX) <= 12)
+    //      && (Math.abs(pCY - eCY) <= 12))?true:false
+    // };
 
+    var intersect = function (pCX, pCY, eCX, eCY) {
+       var hyp = Math.sqrt(Math.pow(30, 2)+ Math.pow(30, 2));
+       var rad = 12;
+       return ((Math.abs(pCX - eCX) <= (hyp+rad))
+          && (Math.abs(pCY - eCY) <= (hyp+rad)))?true:false
+
+    };
+   
     var tweenFn = function(d, i, a) {
-      // checkIntersect();
       return d3.interpolate(a, Math.random() * window.width);
     };
 
     var move = function() {enemies.transition()
       .duration(5000)
-      //.attr("cx", function(x) {return (Math.random() * width)})
-      // .attr("cy", function(y) {return (Math.random() * height)})
-      .attrTween("cx", tweenFn)
-      .attrTween("cy", tweenFn)
+      //.attr("x", function(x) {return (Math.random() * width)})
+      //.attr("y", function(y) {return (Math.random() * height)})
+      .attrTween("x", tweenFn)
+      .attrTween("y", tweenFn)
       .each("end", move);
-      //checkIntersect();
     };
+
     move();
     setInterval(function(){ checkIntersect("Enemy");}, 5);
     setInterval(function(){ d3.select("body").select(".score").text("Score: "+score);});
@@ -90,6 +110,7 @@
 
 
     </script>
+
   </body>
 
 </html>
